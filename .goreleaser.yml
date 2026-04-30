@@ -1,0 +1,52 @@
+version: 2
+
+builds:
+  - main: ./cmd/neetoauth/
+    binary: neetoauth
+    env:
+      - CGO_ENABLED=0
+    goos:
+      - linux
+      - darwin
+      - windows
+    goarch:
+      - amd64
+      - arm64
+    ldflags:
+      - -s -w
+      - -X github.com/neetozone/neeto-auth-cli/internal/commands.Version={{.Version}}
+      - -X github.com/neetozone/neeto-auth-cli/internal/commands.Commit={{.ShortCommit}}
+      - -X github.com/neetozone/neeto-auth-cli/internal/commands.Date={{.Date}}
+
+archives:
+  - format: tar.gz
+    format_overrides:
+      - goos: windows
+        format: zip
+    name_template: "{{ .ProjectName }}_{{ .Version }}_{{ .Os }}_{{ .Arch }}"
+
+brews:
+  - name: neetoauth
+    repository:
+      owner: neetozone
+      name: homebrew-tap
+      token: "{{ .Env.TAP_GITHUB_TOKEN }}"
+    commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
+    url_template: "https://neeto-downloads.s3.amazonaws.com/cli/NeetoAuth/v{{ .Version }}/{{ .ArtifactName }}"
+    homepage: "https://neetoauth.com"
+    description: "Command-line interface for neetoAuth team member management."
+    install: |
+      bin.install "neetoauth"
+
+release:
+  name_template: "v{{ .Version }}"
+
+checksum:
+  name_template: "checksums.txt"
+
+changelog:
+  sort: asc
+  filters:
+    exclude:
+      - "^docs:"
+      - "^test:"

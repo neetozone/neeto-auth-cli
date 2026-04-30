@@ -1,0 +1,10 @@
+{
+  "name": "neetoauth",
+  "description": "Command-line interface for neetoAuth team member management.",
+  "author": {
+    "name": "BigBinary",
+    "email": "support@bigbinary.com"
+  },
+  "homepage": "https://github.com/neetozone/neeto-auth-cli",
+  "repository": "https://github.com/neetozone/neeto-auth-cli"
+}
