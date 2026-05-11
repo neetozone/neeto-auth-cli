@@ -44,10 +44,6 @@ func printResource(data json.RawMessage, breadcrumbs []output.Breadcrumb) {
 	output.Print(data, breadcrumbs)
 }
 
-func printActionResult(data json.RawMessage, breadcrumbs []output.Breadcrumb) {
-	output.PrintQuiet(data, breadcrumbs)
-}
-
 func paginationParams(cmd *cobra.Command) url.Values {
 	params := url.Values{}
 	page, _ := cmd.Flags().GetInt("page")

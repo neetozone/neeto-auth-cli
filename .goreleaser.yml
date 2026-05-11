@@ -34,7 +34,7 @@ brews:
     commit_msg_template: "Brew formula update for {{ .ProjectName }} version {{ .Tag }}"
     url_template: "https://neeto-downloads.s3.amazonaws.com/cli/NeetoAuth/v{{ .Version }}/{{ .ArtifactName }}"
     homepage: "https://neetoauth.com"
-    description: "Command-line interface for neetoAuth team member management."
+    description: "Command-line interface for NeetoAuth team member management."
     install: |
       bin.install "neetoauth"
 

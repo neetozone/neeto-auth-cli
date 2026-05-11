@@ -3,6 +3,7 @@ package commands
 import (
 	"fmt"
 	"net/http"
+	"net/url"
 	"time"
 
 	"github.com/neetozone/neeto-auth-cli/internal/auth"
@@ -13,35 +14,46 @@ var doctorCmd = &cobra.Command{
 	Use:   "doctor",
 	Short: "Check CLI health and connectivity",
 	RunE: func(cmd *cobra.Command, args []string) error {
-		// Check credentials
 		subdomain, _ := cmd.Flags().GetString("subdomain")
-		creds, err := auth.SelectCredentials(subdomain)
-		if err != nil {
-			fmt.Printf("✗ Authentication: %v\n", err)
-			return nil
-		}
-		fmt.Printf("✓ Authentication: logged in as %s on %s.neetoauth.com\n", creds.Email, creds.Subdomain)
 
-		// Check connectivity
-		baseURL := auth.BaseURL(creds.Subdomain)
-		httpClient := &http.Client{Timeout: 10 * time.Second}
-		start := time.Now()
-		resp, err := httpClient.Get(baseURL)
-		elapsed := time.Since(start)
-
-		if err != nil {
-			fmt.Printf("✗ API connection: could not reach %s\n", baseURL)
-			fmt.Printf("  Error: %v\n", err)
+		creds, credsErr := auth.SelectCredentials(subdomain)
+		if credsErr != nil {
+			fmt.Printf("✗ Authentication: %v\n", credsErr)
 		} else {
-			resp.Body.Close()
-			fmt.Printf("✓ API connection: %s (responding in %dms)\n", baseURL, elapsed.Milliseconds())
+			fmt.Printf("✓ Authentication: logged in as %s on %s\n", creds.Email, hostFromBaseURL(auth.BaseURL(creds.Subdomain), creds.Subdomain))
 		}
 
-		// Check version
-		fmt.Printf("✓ CLI version: %s\n", Version)
+		probeSubdomain := subdomain
+		if creds != nil {
+			probeSubdomain = creds.Subdomain
+		}
+		if probeSubdomain == "" {
+			fmt.Printf("• API connection: skipped (no subdomain — pass --subdomain or log in)\n")
+		} else {
+			baseURL := auth.BaseURL(probeSubdomain)
+			httpClient := &http.Client{Timeout: 10 * time.Second}
+			start := time.Now()
+			resp, err := httpClient.Get(baseURL)
+			elapsed := time.Since(start)
+			if err != nil {
+				fmt.Printf("✗ API connection: could not reach %s\n", baseURL)
+				fmt.Printf("  Error: %v\n", err)
+			} else {
+				resp.Body.Close()
+				fmt.Printf("✓ API connection: %s (responding in %dms)\n", baseURL, elapsed.Milliseconds())
+			}
+		}
 
+		fmt.Printf("✓ CLI version: %s\n", Version)
 		return nil
 	},
+}
+
+func hostFromBaseURL(baseURL, subdomain string) string {
+	if u, err := url.Parse(baseURL); err == nil && u.Host != "" {
+		return u.Host
+	}
+	return subdomain + ".neetoauth.com"
 }
 
 func init() {

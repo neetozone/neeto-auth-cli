@@ -1,6 +1,6 @@
 # NeetoAuth CLI
 
-neetoAuth CLI lets you manage team members and inspect product roles in your neetoAuth workspace from the terminal, and integrates with Claude Code as a skill.
+NeetoAuth CLI lets you manage team members and inspect product roles in your NeetoAuth workspace from the terminal, and integrates with Claude Code as a skill.
 
 ## Installation
 
