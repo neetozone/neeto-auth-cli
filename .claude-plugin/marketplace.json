@@ -1,0 +1,14 @@
+{
+  "name": "neetoauth",
+  "owner": {
+    "name": "BigBinary",
+    "email": "support@bigbinary.com"
+  },
+  "plugins": [
+    {
+      "name": "neetoauth",
+      "source": "./",
+      "description": "Command-line interface for NeetoAuth team member management."
+    }
+  ]
+}

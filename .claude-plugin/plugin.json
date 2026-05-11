@@ -1,6 +1,6 @@
 {
   "name": "neetoauth",
-  "description": "Command-line interface for neetoAuth team member management.",
+  "description": "Command-line interface for NeetoAuth team member management.",
   "author": {
     "name": "BigBinary",
     "email": "support@bigbinary.com"

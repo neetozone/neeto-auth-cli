@@ -3,7 +3,6 @@ package commands
 import (
 	"fmt"
 	"os"
-	"os/exec"
 	"path/filepath"
 	"regexp"
 	"strings"
@@ -50,12 +49,13 @@ var setupClaudeCmd = &cobra.Command{
 			}
 		}
 
-		out, err := exec.Command("claude", "plugin", "add", dest).CombinedOutput()
-		if err != nil {
-			return fmt.Errorf("claude plugin add failed: %s\n%w", string(out), err)
-		}
-
-		fmt.Println("NeetoAuth plugin registered with Claude Code.")
+		fmt.Printf("NeetoAuth plugin extracted to %s\n", dest)
+		fmt.Println()
+		fmt.Println("To finish installation, open Claude Code and run these slash commands:")
+		fmt.Printf("  /plugin marketplace add %s\n", dest)
+		fmt.Printf("  /plugin install %s@%s\n", plugin.PluginName, plugin.MarketplaceName)
+		fmt.Println()
+		fmt.Println("(Claude Code installs plugins via interactive slash commands — there is no shell equivalent today.)")
 		return nil
 	},
 }
@@ -74,7 +74,7 @@ var setupCursorCmd = &cobra.Command{
 func cursorContent() string {
 	var b strings.Builder
 	b.WriteString("---\n")
-	b.WriteString("description: \"Command-line interface for neetoAuth team member management.\"\n")
+	b.WriteString("description: \"Command-line interface for NeetoAuth team member management.\"\n")
 	b.WriteString("alwaysApply: true\n")
 	b.WriteString("---\n\n")
 	b.WriteString(plugin.SkillBody())
@@ -96,7 +96,7 @@ func windsurfContent() string {
 	var b strings.Builder
 	b.WriteString("---\n")
 	b.WriteString("trigger: always_on\n")
-	b.WriteString("description: \"Command-line interface for neetoAuth team member management.\"\n")
+	b.WriteString("description: \"Command-line interface for NeetoAuth team member management.\"\n")
 	b.WriteString("---\n\n")
 	b.WriteString(plugin.SkillBody())
 	return b.String()
