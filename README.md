@@ -9,6 +9,7 @@ NeetoAuth CLI lets you manage team members and inspect product roles in your Nee
 **Homebrew (recommended on macOS):**
 
 ```bash
+brew trust neetozone/tap
 brew install neetozone/homebrew-tap/neetoauth
 ```
 
