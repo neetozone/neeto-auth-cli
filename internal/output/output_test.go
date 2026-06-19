@@ -124,6 +124,28 @@ func TestPrint_JSONEnvelope(t *testing.T) {
 	}
 }
 
+func TestPrintPretty_TableIncludesArrayColumn(t *testing.T) {
+	ForceJSON = false
+	QuietMode = false
+	ToonMode = false
+
+	data := json.RawMessage(`[{"name":"Desk","roles":["Admin","Agent"]},{"name":"KB","roles":["Admin","Collaborator","Editor"]}]`)
+
+	out := captureStdout(t, func() {
+		printPretty(data)
+	})
+
+	if !strings.Contains(out, "ROLES") {
+		t.Errorf("table output missing ROLES column header:\n%s", out)
+	}
+	if !strings.Contains(out, "Admin, Agent") {
+		t.Errorf("table output missing joined roles for Desk:\n%s", out)
+	}
+	if !strings.Contains(out, "Admin, Collaborator, Editor") {
+		t.Errorf("table output missing joined roles for KB:\n%s", out)
+	}
+}
+
 func TestPrintWithPagination_QuietMode(t *testing.T) {
 	ForceJSON = false
 	QuietMode = true

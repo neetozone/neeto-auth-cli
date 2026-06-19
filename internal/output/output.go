@@ -247,10 +247,10 @@ func printTable(rows []map[string]interface{}) {
 }
 
 func pickColumns(sample map[string]interface{}) []string {
-	scalars := map[string]bool{}
+	displayable := map[string]bool{}
 	for k, v := range sample {
-		if isScalar(v) {
-			scalars[k] = true
+		if isDisplayable(v) {
+			displayable[k] = true
 		}
 	}
 
@@ -258,14 +258,14 @@ func pickColumns(sample map[string]interface{}) []string {
 	used := map[string]bool{}
 
 	for _, f := range priorityFields {
-		if scalars[f] && !used[f] && len(cols) < maxTableColumns {
+		if displayable[f] && !used[f] && len(cols) < maxTableColumns {
 			cols = append(cols, f)
 			used[f] = true
 		}
 	}
 
 	var remaining []string
-	for k := range scalars {
+	for k := range displayable {
 		if !used[k] {
 			remaining = append(remaining, k)
 		}
@@ -460,6 +460,21 @@ func isScalar(v interface{}) bool {
 	return false
 }
 
+func isDisplayable(v interface{}) bool {
+	if isScalar(v) {
+		return true
+	}
+	if arr, ok := v.([]interface{}); ok {
+		for _, item := range arr {
+			if !isScalar(item) {
+				return false
+			}
+		}
+		return true
+	}
+	return false
+}
+
 func formatHeader(field string) string {
 	return strings.ToUpper(strings.ReplaceAll(field, "_", " "))
 }
@@ -481,6 +496,15 @@ func formatValue(v interface{}) string {
 		return fmt.Sprintf("%.2f", val)
 	case string:
 		return val
+	case []interface{}:
+		if len(val) == 0 {
+			return "-"
+		}
+		parts := make([]string, len(val))
+		for i, item := range val {
+			parts[i] = formatValue(item)
+		}
+		return strings.Join(parts, ", ")
 	default:
 		return fmt.Sprintf("%v", val)
 	}
