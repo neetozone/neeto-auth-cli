@@ -125,6 +125,10 @@ func TestPrint_JSONEnvelope(t *testing.T) {
 }
 
 func TestPrintPretty_TableIncludesArrayColumn(t *testing.T) {
+	origForceJSON, origQuietMode, origToonMode := ForceJSON, QuietMode, ToonMode
+	t.Cleanup(func() {
+		ForceJSON, QuietMode, ToonMode = origForceJSON, origQuietMode, origToonMode
+	})
 	ForceJSON = false
 	QuietMode = false
 	ToonMode = false
@@ -135,6 +139,9 @@ func TestPrintPretty_TableIncludesArrayColumn(t *testing.T) {
 		printPretty(data)
 	})
 
+	if !strings.Contains(out, "───") {
+		t.Errorf("output was not rendered as a table (missing separator row):\n%s", out)
+	}
 	if !strings.Contains(out, "ROLES") {
 		t.Errorf("table output missing ROLES column header:\n%s", out)
 	}
