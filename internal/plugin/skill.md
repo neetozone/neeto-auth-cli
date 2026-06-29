@@ -16,13 +16,13 @@ Credentials for every logged-in subdomain are stored together in
 `~/.config/neetoauth/auth.json`. A command that talks to the API picks which
 subdomain to use by these rules:
 
-- 0 subdomains logged in → every credential-using command errors with
-  "not logged in. Run 'neetoauth login' to authenticate".
-- 1 subdomain logged in → that one is the implicit default; `--subdomain`
+- 0 subdomains authenticated → every credential-using command errors with
+  "Not authenticated. Run 'neetoauth login' to authenticate.".
+- 1 subdomain authenticated → that one is the implicit default; `--subdomain`
   may be omitted.
-- 2+ subdomains logged in → **`--subdomain <name>` is required** on every
+- 2+ subdomains authenticated → **`--subdomain <name>` is required** on every
   credential-using command, including `doctor`. The error lists every
-  logged-in subdomain so the agent can offer a choice.
+  authenticated subdomain so the agent can offer a choice.
 
 `login` / `logout` / `whoami` have dedicated behavior:
 
@@ -31,15 +31,15 @@ subdomain to use by these rules:
 | `neetoauth login --subdomain <name>` | Adds or refreshes the entry for `<name>`. No flag → prompts for the subdomain. |
 | `neetoauth logout --subdomain <name>` | Removes that one entry. |
 | `neetoauth logout --all` | Removes every entry. |
-| `neetoauth logout` (no flag) | Removes the only entry if exactly one is logged in; errors if multiple. |
-| `neetoauth whoami` | Lists every logged-in account. Marks the entry `(default)` when exactly one. |
+| `neetoauth logout` (no flag) | Removes the only entry if exactly one is authenticated; errors if multiple. |
+| `neetoauth whoami` | Lists every authenticated account. Marks the entry `(default)` when exactly one. |
 | `neetoauth whoami --subdomain <name>` | Shows just that one. |
 
 ## Global flags (persistent on every command)
 
 | Flag | Purpose |
 |---|---|
-| `--subdomain <name>` | Select which logged-in subdomain the command targets. Required when multiple are logged in. |
+| `--subdomain <name>` | Select which authenticated subdomain the command targets. Required when multiple are authenticated. |
 | `--json` | Force JSON envelope output even on a TTY. |
 | `--quiet` | Emit only the raw payload — no envelope, no breadcrumbs. For action commands (create/update), emits just the resource identifier; `delete` emits `success`. Designed for scripting. |
 | `--toon` | Emit TOON (Token Optimized Output Notation). Preferred for feeding list/show output back to an LLM; ~30–60% fewer tokens than JSON. |
@@ -98,7 +98,7 @@ Use this whenever a user asks about a flag or command not covered below.
 
 | Command | Purpose |
 |---|---|
-| `doctor` | Auth check + API reachability + version. Uses `--subdomain` when multiple are logged in. |
+| `doctor` | Auth check + API reachability + version. Uses `--subdomain` when multiple are authenticated. |
 | `version` | Print CLI version / commit / build date. |
 | `commands` | Emit the full command/flag catalog as JSON. |
 | `setup claude` | Install NeetoAuth plugin into Claude Code (`plugin.json`, hooks, this SKILL.md). |
@@ -118,9 +118,9 @@ neetoauth login --subdomain acme
 Every command exits non-zero on failure and writes a single-line message to
 stderr. Common errors the agent should expect:
 
-- `not logged in. Run 'neetoauth login' to authenticate` — empty credential store.
-- `multiple subdomains logged in (acme, beta); specify --subdomain` — pick one.
-- `not logged in to "foo". Logged in subdomains: acme, beta` — bad `--subdomain`.
+- `Not authenticated. Run 'neetoauth login' to authenticate.` — empty credential store.
+- `Multiple subdomains authenticated (acme, beta); specify --subdomain.` — pick one.
+- `Not authenticated for "foo". Authenticated subdomains: acme, beta.` — bad `--subdomain`.
 - `required flag(s) "xxx" not set` (from cobra) — missing required flag.
 - API errors come through with the server's message body; inspect the
   JSON envelope (or the `--quiet` payload) for `error` / `errors` / `notice`
