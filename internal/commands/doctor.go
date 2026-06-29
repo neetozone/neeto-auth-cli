@@ -20,7 +20,7 @@ var doctorCmd = &cobra.Command{
 		if credsErr != nil {
 			fmt.Printf("✗ Authentication: %v\n", credsErr)
 		} else {
-			fmt.Printf("✓ Authentication: logged in as %s on %s\n", creds.Email, hostFromBaseURL(auth.BaseURL(creds.Subdomain), creds.Subdomain))
+			fmt.Printf("✓ Authentication: authenticated as %s on %s\n", creds.Email, hostFromBaseURL(auth.BaseURL(creds.Subdomain), creds.Subdomain))
 		}
 
 		probeSubdomain := subdomain
@@ -28,7 +28,7 @@ var doctorCmd = &cobra.Command{
 			probeSubdomain = creds.Subdomain
 		}
 		if probeSubdomain == "" {
-			fmt.Printf("• API connection: skipped (no subdomain — pass --subdomain or log in)\n")
+			fmt.Printf("• API connection: skipped (no subdomain — pass --subdomain or authenticate)\n")
 		} else {
 			baseURL := auth.BaseURL(probeSubdomain)
 			httpClient := &http.Client{Timeout: 10 * time.Second}
