@@ -1,6 +1,8 @@
 # NeetoAuth CLI
 
-NeetoAuth CLI lets you manage team members and inspect product roles in your NeetoAuth workspace from the terminal, and integrates with Claude Code as a skill.
+NeetoAuth CLI lets you manage team members and inspect product roles in your
+NeetoAuth workspace from the terminal, and integrates with Claude Code as a
+skill.
 
 ## Installation
 
@@ -52,7 +54,8 @@ cd neeto-auth-cli
 bin/setup
 ```
 
-This installs Go dependencies, golangci-lint, configures git hooks, and builds the binary.
+This installs Go dependencies, golangci-lint, configures git hooks, and builds
+the binary.
 
 ### Make targets
 
@@ -69,7 +72,8 @@ make clean          # Remove built binary
 
 ### Pointing to a local or staging server
 
-Set `NEETOAUTH_BASE_URL` to override the default `https://<subdomain>.neetoauth.com`:
+Set `NEETOAUTH_BASE_URL` to override the default
+`https://<subdomain>.neetoauth.com`:
 
 ```bash
 export NEETOAUTH_BASE_URL=http://acme.lvh.me:8980
@@ -93,15 +97,15 @@ See [`docs/adding-commands.md`](docs/adding-commands.md) for the step-by-step
 workflow for adding new resource commands that use the built-in auth, HTTP
 client, and output helpers.
 
-Quick API wrapper reference: [`docs/api-wrapper-reference.md`](docs/api-wrapper-reference.md).
+Quick API wrapper reference:
+[`docs/api-wrapper-reference.md`](docs/api-wrapper-reference.md).
 
 ## Release
 
-Releases are cut by BigBinary's CI pipeline defined in
-`.neetoci/release.yml`. Merging a PR with a `major` / `minor` / `patch`
-label to `main` triggers `.scripts/release.sh`, which tags the current
-VERSION, runs GoReleaser, uploads artifacts to
-`s3://neeto-downloads/cli/NeetoAuth/`, updates the Homebrew tap
+Releases are cut by BigBinary's CI pipeline defined in `.neetoci/release.yml`.
+Merging a PR with a `major` / `minor` / `patch` label to `main` triggers
+`.scripts/release.sh`, which tags the current VERSION, runs GoReleaser, uploads
+artifacts to `s3://neeto-downloads/cli/NeetoAuth/`, updates the Homebrew tap
 (`neetozone/homebrew-tap`), and opens the next-version bump PR.
 
 ## AI coding assistants
