@@ -16,9 +16,12 @@ var (
 )
 
 var rootCmd = &cobra.Command{
-	Use:           "neetoauth",
-	Short:         "Command-line interface for NeetoAuth team member management.",
-	Long:          "NeetoAuth CLI lets you manage team members and inspect product roles in your NeetoAuth workspace from the terminal, and integrates with Claude Code as a skill.",
+	Use:   "neetoauth",
+	Short: "Command-line interface for NeetoAuth team member management.",
+	Long:  "NeetoAuth CLI lets you manage team members and inspect product roles in your NeetoAuth workspace from the terminal, and integrates with Claude Code as a skill.",
+	Example: "  $ neetoauth users list\n" +
+		"  $ neetoauth products list\n" +
+		"  $ neetoauth whoami",
 	SilenceUsage:  true,
 	SilenceErrors: true,
 	PersistentPreRun: func(cmd *cobra.Command, args []string) {
