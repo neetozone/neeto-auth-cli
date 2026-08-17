@@ -1,8 +1,11 @@
 package commands
 
 import (
+	"net/http"
 	"strings"
 	"testing"
+
+	"github.com/neetozone/neeto-auth-cli/internal/client"
 )
 
 func TestProductsCommandsRegistered(t *testing.T) {
@@ -79,26 +82,13 @@ func TestProductBreadcrumbs(t *testing.T) {
 }
 
 func TestIsProductNotFoundError(t *testing.T) {
-	notFound := []string{
-		"product not found",
-		"Product Not Found",
-		"request failed with status 404",
-		"404 Not Found",
+	if !isProductNotFoundError(&client.APIError{StatusCode: http.StatusNotFound}) {
+		t.Error("isProductNotFoundError(404) = false, want true")
 	}
-	for _, msg := range notFound {
-		if !isProductNotFoundError(errString(msg)) {
-			t.Errorf("isProductNotFoundError(%q) = false, want true", msg)
-		}
+	if isProductNotFoundError(&client.APIError{StatusCode: http.StatusInternalServerError}) {
+		t.Error("isProductNotFoundError(500) = true, want false")
 	}
-
-	other := []string{
-		"unauthorized",
-		"request failed with status 500",
-		"connection refused",
-	}
-	for _, msg := range other {
-		if isProductNotFoundError(errString(msg)) {
-			t.Errorf("isProductNotFoundError(%q) = true, want false", msg)
-		}
+	if isProductNotFoundError(errString("plain error, not an APIError")) {
+		t.Error("isProductNotFoundError(non-APIError) = true, want false")
 	}
 }

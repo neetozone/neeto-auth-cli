@@ -197,19 +197,12 @@ func installCompletion(root *cobra.Command, shell string, w io.Writer) error {
 		if err := writeCompletionScript(root, shell, script); err != nil {
 			return err
 		}
-		if _, err := fmt.Fprintf(w, "Installed %s completion:\n", shell); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintf(w, "  script: %s (overwritten)\n", script); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintln(w, "fish loads it automatically. Start a new shell to use it."); err != nil {
-			return err
-		}
-		if _, err := fmt.Fprintf(w, "Re-run \"%s completion %s\" after upgrading to keep completions current with the latest commands.\n", name, shell); err != nil {
-			return err
-		}
-		return nil
+		msg := fmt.Sprintf(
+			"Installed %s completion:\n  script: %s (overwritten)\nfish loads it automatically. Start a new shell to use it.\nRe-run \"%s completion %s\" after upgrading to keep completions current with the latest commands.\n",
+			shell, script, name, shell,
+		)
+		_, err := fmt.Fprint(w, msg)
+		return err
 
 	case "powershell":
 		script := filepath.Join(dir, name+".ps1")

@@ -15,8 +15,9 @@ import (
 )
 
 const (
-	pollInterval = 2 * time.Second
-	pollTimeout  = 120 * time.Second
+	pollInterval         = 2 * time.Second
+	pollTimeout          = 120 * time.Second
+	maxConsecutiveErrors = 5
 )
 
 func BaseURL(subdomain string) string {
@@ -28,28 +29,39 @@ func BaseURL(subdomain string) string {
 
 func Login(subdomain string) (*Credentials, error) {
 	baseURL := BaseURL(subdomain)
+
 	loginToken, err := createSession(baseURL)
 	if err != nil {
 		return nil, fmt.Errorf("could not create authentication session: %w", err)
 	}
 
-	loginURL := fmt.Sprintf("%s/api/cli/v1/login?token=%s", baseURL, loginToken)
-	fmt.Println("opening browser for authentication...")
-	fmt.Printf("if the browser doesn't open, visit: %s\n", loginURL)
+	loginURL := fmt.Sprintf("%s/api/cli/v1/login?token=%s", baseURL, url.QueryEscape(loginToken))
+	fmt.Println("Opening browser for authentication...")
+	fmt.Printf("If the browser doesn't open, visit: %s\n", loginURL)
 	if err := browser.OpenURL(loginURL); err != nil {
-		fmt.Printf("could not open browser: %v\n", err)
+		fmt.Printf("Could not open browser: %v\n", err)
 	}
 
-	fmt.Print("waiting for authentication")
+	fmt.Print("Waiting for authentication")
 	deadline := time.Now().Add(pollTimeout)
+	consecutiveErrors := 0
+	var lastErr error
+
 	for time.Now().Before(deadline) {
 		time.Sleep(pollInterval)
 		fmt.Print(".")
 
 		status, email, sessionToken, err := checkStatus(baseURL, loginToken)
 		if err != nil {
+			consecutiveErrors++
+			lastErr = err
+			if consecutiveErrors >= maxConsecutiveErrors {
+				fmt.Println()
+				return nil, fmt.Errorf("could not check authentication status after %d attempts: %w", consecutiveErrors, lastErr)
+			}
 			continue
 		}
+		consecutiveErrors = 0
 
 		switch status {
 		case "authenticated":
@@ -110,7 +122,7 @@ func redirectedAway(requestedURL string, resp *http.Response) bool {
 }
 
 func checkStatus(baseURL, loginToken string) (status, email, sessionToken string, err error) {
-	statusURL := fmt.Sprintf("%s/api/cli/v1/sessions/%s/status", baseURL, loginToken)
+	statusURL := fmt.Sprintf("%s/api/cli/v1/sessions/%s/status", baseURL, url.PathEscape(loginToken))
 	resp, err := http.Post(statusURL, "application/json", bytes.NewReader([]byte("{}")))
 	if err != nil {
 		return "", "", "", err

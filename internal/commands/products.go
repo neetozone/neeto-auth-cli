@@ -1,10 +1,11 @@
 package commands
 
 import (
-	"encoding/json"
+	"errors"
 	"fmt"
-	"strings"
+	"net/http"
 
+	"github.com/neetozone/neeto-auth-cli/internal/client"
 	"github.com/neetozone/neeto-auth-cli/internal/output"
 	"github.com/spf13/cobra"
 )
@@ -68,19 +69,19 @@ func toggleProduct(enabled bool) func(cmd *cobra.Command, args []string) error {
 			}
 			return fmt.Errorf("failed to %s product %q: %w", action, product, err)
 		}
-		result, _ := json.Marshal(map[string]string{
-			"product": product,
-			"status":  verbed,
-		})
-		printResource(result, nil)
+		output.PrintMessage(fmt.Sprintf("Product %q %s.", product, verbed))
 		return nil
 	}
 }
 
 func isProductNotFoundError(err error) bool {
-	msg := strings.ToLower(err.Error())
-	return strings.Contains(msg, "not found") || strings.Contains(msg, "404")
+	var apiErr *client.APIError
+	if errors.As(err, &apiErr) {
+		return apiErr.StatusCode == http.StatusNotFound
+	}
+	return false
 }
+
 func productBreadcrumbs() []output.Breadcrumb {
 	return []output.Breadcrumb{
 		{Label: "Use a role when inviting", Command: "neetoauth users create --email <email> --role non_owner --app <product>:<role>"},
