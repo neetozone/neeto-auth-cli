@@ -39,7 +39,7 @@ var doctorCmd = &cobra.Command{
 				fmt.Printf("✗ API connection: could not reach %s\n", baseURL)
 				fmt.Printf("  Error: %v\n", err)
 			} else {
-				resp.Body.Close()
+				_ = resp.Body.Close()
 				fmt.Printf("✓ API connection: %s (responding in %dms)\n", baseURL, elapsed.Milliseconds())
 			}
 		}

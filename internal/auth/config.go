@@ -27,7 +27,7 @@ type Store struct {
 func configPath() (string, error) {
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return "", fmt.Errorf("Could not determine home directory: %w", err)
+		return "", fmt.Errorf("could not determine home directory: %w", err)
 	}
 	return filepath.Join(home, configDir), nil
 }
@@ -51,17 +51,15 @@ func LoadStore() (*Store, error) {
 		if os.IsNotExist(err) {
 			return &Store{}, nil
 		}
-		return nil, fmt.Errorf("Could not read credentials: %w", err)
+		return nil, fmt.Errorf("could not read credentials: %w", err)
 	}
-
 	var store Store
 	if err := json.Unmarshal(data, &store); err == nil && store.Credentials != nil {
 		return &store, nil
 	}
-
 	var legacy Credentials
 	if err := json.Unmarshal(data, &legacy); err != nil {
-		return nil, fmt.Errorf("Invalid credentials file: %w", err)
+		return nil, fmt.Errorf("invalid credentials file: %w", err)
 	}
 	if legacy.SessionToken == "" {
 		return &Store{}, nil
@@ -74,34 +72,28 @@ func SaveStore(store *Store) error {
 	if err != nil {
 		return err
 	}
-
 	if len(store.Credentials) == 0 {
 		if err := os.Remove(path); err != nil && !os.IsNotExist(err) {
-			return fmt.Errorf("Could not remove credentials: %w", err)
+			return fmt.Errorf("could not remove credentials: %w", err)
 		}
 		return nil
 	}
-
 	dir, err := configPath()
 	if err != nil {
 		return err
 	}
 	if err := os.MkdirAll(dir, 0700); err != nil {
-		return fmt.Errorf("Could not create config directory: %w", err)
+		return fmt.Errorf("could not create config directory: %w", err)
 	}
-
 	data, err := json.MarshalIndent(store, "", "  ")
 	if err != nil {
-		return fmt.Errorf("Could not serialize credentials: %w", err)
+		return fmt.Errorf("could not serialize credentials: %w", err)
 	}
-
 	if err := os.WriteFile(path, data, 0600); err != nil {
-		return fmt.Errorf("Could not write credentials: %w", err)
+		return fmt.Errorf("could not write credentials: %w", err)
 	}
-
 	return nil
 }
-
 func (s *Store) Find(subdomain string) (*Credentials, bool) {
 	for i := range s.Credentials {
 		if s.Credentials[i].Subdomain == subdomain {
@@ -145,12 +137,12 @@ func SelectCredentials(subdomain string) (*Credentials, error) {
 		return nil, err
 	}
 	if len(store.Credentials) == 0 {
-		return nil, fmt.Errorf("Not authenticated. Run 'neetoauth login' to authenticate.")
+		return nil, fmt.Errorf("not authenticated. Run 'neetoauth login' to authenticate")
 	}
 	if subdomain != "" {
 		creds, ok := store.Find(subdomain)
 		if !ok {
-			return nil, fmt.Errorf("Not authenticated for %q. Authenticated subdomains: %s.",
+			return nil, fmt.Errorf("not authenticated for %q. Authenticated subdomains: %s",
 				subdomain, strings.Join(store.Subdomains(), ", "))
 		}
 		return creds, nil
@@ -158,6 +150,6 @@ func SelectCredentials(subdomain string) (*Credentials, error) {
 	if len(store.Credentials) == 1 {
 		return &store.Credentials[0], nil
 	}
-	return nil, fmt.Errorf("Multiple subdomains authenticated (%s); specify --subdomain.",
+	return nil, fmt.Errorf("multiple subdomains authenticated (%s); specify --subdomain",
 		strings.Join(store.Subdomains(), ", "))
 }

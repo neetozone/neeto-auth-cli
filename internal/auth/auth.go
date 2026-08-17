@@ -28,23 +28,20 @@ func BaseURL(subdomain string) string {
 
 func Login(subdomain string) (*Credentials, error) {
 	baseURL := BaseURL(subdomain)
-
 	loginToken, err := createSession(baseURL)
 	if err != nil {
-		return nil, fmt.Errorf("Could not create authentication session: %w", err)
+		return nil, fmt.Errorf("could not create authentication session: %w", err)
 	}
 
 	loginURL := fmt.Sprintf("%s/api/cli/v1/login?token=%s", baseURL, loginToken)
-	fmt.Println("Opening browser for authentication...")
-	fmt.Printf("If the browser doesn't open, visit: %s\n", loginURL)
-
+	fmt.Println("opening browser for authentication...")
+	fmt.Printf("if the browser doesn't open, visit: %s\n", loginURL)
 	if err := browser.OpenURL(loginURL); err != nil {
-		fmt.Printf("Could not open browser: %v\n", err)
+		fmt.Printf("could not open browser: %v\n", err)
 	}
 
-	fmt.Print("Waiting for authentication")
+	fmt.Print("waiting for authentication")
 	deadline := time.Now().Add(pollTimeout)
-
 	for time.Now().Before(deadline) {
 		time.Sleep(pollInterval)
 		fmt.Print(".")
@@ -64,21 +61,21 @@ func Login(subdomain string) (*Credentials, error) {
 			}
 			store, err := LoadStore()
 			if err != nil {
-				return nil, fmt.Errorf("Authenticated but could not read credentials: %w", err)
+				return nil, fmt.Errorf("authenticated but could not read credentials: %w", err)
 			}
 			store.Upsert(creds)
 			if err := SaveStore(store); err != nil {
-				return nil, fmt.Errorf("Authenticated but could not save credentials: %w", err)
+				return nil, fmt.Errorf("authenticated but could not save credentials: %w", err)
 			}
 			return &creds, nil
 		case "expired":
 			fmt.Println()
-			return nil, fmt.Errorf("Authentication session expired. Please try again.")
+			return nil, fmt.Errorf("authentication session expired, please try again")
 		}
 	}
 
 	fmt.Println()
-	return nil, fmt.Errorf("NeetoAuth CLI authentication timed out after %d minutes. Please try again.", int(pollTimeout/time.Minute))
+	return nil, fmt.Errorf("neetoauth cli authentication timed out after %d minutes, please try again", int(pollTimeout/time.Minute))
 }
 
 func createSession(baseURL string) (string, error) {
@@ -86,14 +83,13 @@ func createSession(baseURL string) (string, error) {
 	if err != nil {
 		return "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound || redirectedAway(baseURL, resp) {
-		return "", fmt.Errorf("Subdomain not found. Please check that you entered the correct subdomain.\nFor example, if your NeetoAuth URL is acme.neetoauth.com then enter 'acme'.")
+		return "", fmt.Errorf("subdomain not found, please check that you entered the correct subdomain\nfor example, if your NeetoAuth URL is acme.neetoauth.com then enter 'acme'")
 	}
-
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("Unexpected status %d.", resp.StatusCode)
+		return "", fmt.Errorf("unexpected status %d", resp.StatusCode)
 	}
 
 	var result struct {
@@ -102,7 +98,6 @@ func createSession(baseURL string) (string, error) {
 	if err := json.NewDecoder(resp.Body).Decode(&result); err != nil {
 		return "", err
 	}
-
 	return result.LoginToken, nil
 }
 
@@ -115,12 +110,12 @@ func redirectedAway(requestedURL string, resp *http.Response) bool {
 }
 
 func checkStatus(baseURL, loginToken string) (status, email, sessionToken string, err error) {
-	url := fmt.Sprintf("%s/api/cli/v1/sessions/%s/status", baseURL, loginToken)
-	resp, err := http.Post(url, "application/json", bytes.NewReader([]byte("{}")))
+	statusURL := fmt.Sprintf("%s/api/cli/v1/sessions/%s/status", baseURL, loginToken)
+	resp, err := http.Post(statusURL, "application/json", bytes.NewReader([]byte("{}")))
 	if err != nil {
 		return "", "", "", err
 	}
-	defer resp.Body.Close()
+	defer func() { _ = resp.Body.Close() }()
 
 	body, err := io.ReadAll(resp.Body)
 	if err != nil {
@@ -135,6 +130,5 @@ func checkStatus(baseURL, loginToken string) (status, email, sessionToken string
 	if err := json.Unmarshal(body, &result); err != nil {
 		return "", "", "", err
 	}
-
 	return result.Status, result.Email, result.SessionToken, nil
 }
