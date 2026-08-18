@@ -56,9 +56,6 @@ func TestEnableDisableExamples(t *testing.T) {
 }
 
 func TestToggleProductAction(t *testing.T) {
-	// enableProductCmd.RunE and disableProductCmd.RunE are both built by
-	// toggleProduct with different closures over `enabled`; verify they were
-	// wired the right way round rather than swapped.
 	if enableProductCmd.RunE == nil {
 		t.Fatal("enableProductCmd.RunE is nil")
 	}
