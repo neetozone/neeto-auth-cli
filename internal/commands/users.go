@@ -92,7 +92,7 @@ var usersCreateCmd = &cobra.Command{
 			for _, raw := range appFlags {
 				name, appRole, ok := strings.Cut(raw, ":")
 				if !ok || name == "" || appRole == "" {
-					return fmt.Errorf("Invalid --app value %q (expected name:role).", raw)
+					return fmt.Errorf("invalid --app value %q (expected name:role)", raw)
 				}
 				apps = append(apps, map[string]string{
 					"name": strings.TrimSpace(name),

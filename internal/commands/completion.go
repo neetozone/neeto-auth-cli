@@ -63,7 +63,7 @@ func generateCompletion(root *cobra.Command, shell string, w io.Writer) error {
 	case "powershell":
 		return root.GenPowerShellCompletionWithDesc(w)
 	default:
-		return fmt.Errorf("Unsupported shell: %s", shell)
+		return fmt.Errorf("unsupported shell: %s", shell)
 	}
 }
 
@@ -83,7 +83,7 @@ func writeCompletionScript(root *cobra.Command, shell, path string) error {
 	if err != nil {
 		return err
 	}
-	defer f.Close()
+	defer func() { _ = f.Close() }()
 	return generateCompletion(root, shell, f)
 }
 
@@ -155,7 +155,7 @@ func installCompletion(root *cobra.Command, shell string, w io.Writer) error {
 	name := root.Name()
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return fmt.Errorf("Could not determine home directory: %w", err)
+		return fmt.Errorf("could not determine home directory: %w", err)
 	}
 	dir, err := completionsDir(name)
 	if err != nil {
@@ -197,11 +197,12 @@ func installCompletion(root *cobra.Command, shell string, w io.Writer) error {
 		if err := writeCompletionScript(root, shell, script); err != nil {
 			return err
 		}
-		fmt.Fprintf(w, "Installed %s completion:\n", shell)
-		fmt.Fprintf(w, "  script: %s (overwritten)\n", script)
-		fmt.Fprintln(w, "fish loads it automatically. Start a new shell to use it.")
-		fmt.Fprintf(w, "Re-run \"%s completion %s\" after upgrading to keep completions current with the latest commands.\n", name, shell)
-		return nil
+		msg := fmt.Sprintf(
+			"Installed %s completion:\n  script: %s (overwritten)\nfish loads it automatically. Start a new shell to use it.\nRe-run \"%s completion %s\" after upgrading to keep completions current with the latest commands.\n",
+			shell, script, name, shell,
+		)
+		_, err := fmt.Fprint(w, msg)
+		return err
 
 	case "powershell":
 		script := filepath.Join(dir, name+".ps1")
@@ -217,19 +218,31 @@ func installCompletion(root *cobra.Command, shell string, w io.Writer) error {
 		return reportInstall(w, name, shell, script, profile, refreshed)
 
 	default:
-		return fmt.Errorf("Unsupported shell: %s", shell)
+		return fmt.Errorf("unsupported shell: %s", shell)
 	}
 }
 
 func reportInstall(w io.Writer, name, shell, script, rc string, refreshed bool) error {
-	fmt.Fprintf(w, "Installed %s completion:\n", shell)
-	fmt.Fprintf(w, "  script: %s (overwritten)\n", script)
-	if refreshed {
-		fmt.Fprintf(w, "  loader: refreshed in %s\n", rc)
-	} else {
-		fmt.Fprintf(w, "  loader: added to %s\n", rc)
+	if _, err := fmt.Fprintf(w, "Installed %s completion:\n", shell); err != nil {
+		return err
 	}
-	fmt.Fprintf(w, "Start a new shell (or run: source %s) to use it.\n", rc)
-	fmt.Fprintf(w, "Re-run \"%s completion %s\" after upgrading to keep completions current with the latest commands.\n", name, shell)
+	if _, err := fmt.Fprintf(w, "  script: %s (overwritten)\n", script); err != nil {
+		return err
+	}
+	if refreshed {
+		if _, err := fmt.Fprintf(w, "  loader: refreshed in %s\n", rc); err != nil {
+			return err
+		}
+	} else {
+		if _, err := fmt.Fprintf(w, "  loader: added to %s\n", rc); err != nil {
+			return err
+		}
+	}
+	if _, err := fmt.Fprintf(w, "Start a new shell (or run: source %s) to use it.\n", rc); err != nil {
+		return err
+	}
+	if _, err := fmt.Fprintf(w, "Re-run \"%s completion %s\" after upgrading to keep completions current with the latest commands.\n", name, shell); err != nil {
+		return err
+	}
 	return nil
 }
