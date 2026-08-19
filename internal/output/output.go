@@ -269,7 +269,7 @@ func pickColumns(rows []map[string]interface{}) []string {
 	var urlCols []string
 	for _, row := range rows {
 		for k, v := range row {
-			if !displayable[k] || urlFields[k] {
+			if urlFields[k] {
 				continue
 			}
 			if s, ok := v.(string); ok && isURL(s) {
@@ -562,7 +562,11 @@ func describeValue(v interface{}) string {
 }
 
 func isURL(s string) bool {
-	return strings.HasPrefix(s, "http://") || strings.HasPrefix(s, "https://")
+	return hasScheme(s, "http://") || hasScheme(s, "https://")
+}
+
+func hasScheme(s, scheme string) bool {
+	return len(s) >= len(scheme) && strings.EqualFold(s[:len(scheme)], scheme)
 }
 
 func containsURL(v interface{}) bool {
