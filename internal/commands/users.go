@@ -68,7 +68,7 @@ var usersCreateCmd = &cobra.Command{
 			user["email"] = email
 		}
 		if _, ok := user["email"]; !ok {
-			return fmt.Errorf("--email is required")
+			return fmt.Errorf("--email is required.")
 		}
 
 		role, _ := cmd.Flags().GetString("role")
@@ -76,7 +76,7 @@ var usersCreateCmd = &cobra.Command{
 			user["role"] = role
 		}
 		if _, ok := user["role"]; !ok {
-			return fmt.Errorf("--role is required (e.g. owner, non_owner)")
+			return fmt.Errorf("--role is required (e.g. owner, non_owner).")
 		}
 
 		if firstName, _ := cmd.Flags().GetString("first-name"); firstName != "" {
@@ -92,7 +92,7 @@ var usersCreateCmd = &cobra.Command{
 			for _, raw := range appFlags {
 				name, appRole, ok := strings.Cut(raw, ":")
 				if !ok || name == "" || appRole == "" {
-					return fmt.Errorf("invalid --app value %q (expected name:role)", raw)
+					return fmt.Errorf("Invalid --app value %q (expected name:role).", raw)
 				}
 				apps = append(apps, map[string]string{
 					"name": strings.TrimSpace(name),

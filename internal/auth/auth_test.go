@@ -79,8 +79,8 @@ func TestCreateSession_SubdomainNotFound_Redirect(t *testing.T) {
 	if err == nil {
 		t.Fatal("createSession() expected error for unknown subdomain")
 	}
-	if !strings.Contains(err.Error(), "subdomain not found") {
-		t.Errorf("createSession() error = %q, want it to mention %q", err.Error(), "subdomain not found")
+	if !strings.Contains(err.Error(), "Subdomain not found") {
+		t.Errorf("createSession() error = %q, want it to mention %q", err.Error(), "Subdomain not found")
 	}
 }
 
@@ -94,8 +94,8 @@ func TestCreateSession_SubdomainNotFound_NotFoundStatus(t *testing.T) {
 	if err == nil {
 		t.Fatal("createSession() expected error for 404 response")
 	}
-	if !strings.Contains(err.Error(), "subdomain not found") {
-		t.Errorf("createSession() error = %q, want it to mention %q", err.Error(), "subdomain not found")
+	if !strings.Contains(err.Error(), "Subdomain not found") {
+		t.Errorf("createSession() error = %q, want it to mention %q", err.Error(), "Subdomain not found")
 	}
 }
 

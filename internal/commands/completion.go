@@ -63,7 +63,7 @@ func generateCompletion(root *cobra.Command, shell string, w io.Writer) error {
 	case "powershell":
 		return root.GenPowerShellCompletionWithDesc(w)
 	default:
-		return fmt.Errorf("unsupported shell: %s", shell)
+		return fmt.Errorf("Unsupported shell: %s", shell)
 	}
 }
 
@@ -158,7 +158,7 @@ func installCompletion(root *cobra.Command, shell string, w io.Writer) error {
 	name := root.Name()
 	home, err := os.UserHomeDir()
 	if err != nil {
-		return fmt.Errorf("could not determine home directory: %w", err)
+		return fmt.Errorf("Could not determine home directory: %w", err)
 	}
 	dir, err := completionsDir(name)
 	if err != nil {
@@ -221,7 +221,7 @@ func installCompletion(root *cobra.Command, shell string, w io.Writer) error {
 		return reportInstall(w, name, shell, script, profile, refreshed)
 
 	default:
-		return fmt.Errorf("unsupported shell: %s", shell)
+		return fmt.Errorf("Unsupported shell: %s", shell)
 	}
 }
 

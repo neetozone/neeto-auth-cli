@@ -201,8 +201,8 @@ func TestSelectCredentials_NotLoggedIn(t *testing.T) {
 	if err == nil {
 		t.Fatal("expected error when store is empty")
 	}
-	if !strings.Contains(err.Error(), "not authenticated") {
-		t.Errorf("error = %q, want contains 'not authenticated'", err.Error())
+	if !strings.Contains(err.Error(), "Not authenticated") {
+		t.Errorf("error = %q, want contains 'Not authenticated'", err.Error())
 	}
 }
 

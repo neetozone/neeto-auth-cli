@@ -32,7 +32,7 @@ func Login(subdomain string) (*Credentials, error) {
 
 	loginToken, err := createSession(baseURL)
 	if err != nil {
-		return nil, fmt.Errorf("could not create authentication session: %w", err)
+		return nil, fmt.Errorf("Could not create authentication session: %w", err)
 	}
 
 	loginURL := fmt.Sprintf("%s/api/cli/v1/login?token=%s", baseURL, url.QueryEscape(loginToken))
@@ -57,7 +57,7 @@ func Login(subdomain string) (*Credentials, error) {
 			lastErr = err
 			if consecutiveErrors >= maxConsecutiveErrors {
 				fmt.Println()
-				return nil, fmt.Errorf("could not check authentication status after %d attempts: %w", consecutiveErrors, lastErr)
+				return nil, fmt.Errorf("Could not check authentication status after %d attempts: %w", consecutiveErrors, lastErr)
 			}
 			continue
 		}
@@ -73,21 +73,21 @@ func Login(subdomain string) (*Credentials, error) {
 			}
 			store, err := LoadStore()
 			if err != nil {
-				return nil, fmt.Errorf("authenticated but could not read credentials: %w", err)
+				return nil, fmt.Errorf("Authenticated but could not read credentials: %w", err)
 			}
 			store.Upsert(creds)
 			if err := SaveStore(store); err != nil {
-				return nil, fmt.Errorf("authenticated but could not save credentials: %w", err)
+				return nil, fmt.Errorf("Authenticated but could not save credentials: %w", err)
 			}
 			return &creds, nil
 		case "expired":
 			fmt.Println()
-			return nil, fmt.Errorf("authentication session expired, please try again")
+			return nil, fmt.Errorf("Authentication session expired. Please try again.")
 		}
 	}
 
 	fmt.Println()
-	return nil, fmt.Errorf("neetoauth cli authentication timed out after %d minutes, please try again", int(pollTimeout/time.Minute))
+	return nil, fmt.Errorf("NeetoAuth CLI authentication timed out after %d minutes. Please try again.", int(pollTimeout/time.Minute))
 }
 
 func createSession(baseURL string) (string, error) {
@@ -98,10 +98,10 @@ func createSession(baseURL string) (string, error) {
 	defer func() { _ = resp.Body.Close() }()
 
 	if resp.StatusCode == http.StatusNotFound || redirectedAway(baseURL, resp) {
-		return "", fmt.Errorf("subdomain not found, please check that you entered the correct subdomain\nfor example, if your NeetoAuth URL is acme.neetoauth.com then enter 'acme'")
+		return "", fmt.Errorf("Subdomain not found. Please check that you entered the correct subdomain.\nFor example, if your NeetoAuth URL is acme.neetoauth.com then enter 'acme'.")
 	}
 	if resp.StatusCode != http.StatusOK {
-		return "", fmt.Errorf("unexpected status %d", resp.StatusCode)
+		return "", fmt.Errorf("Unexpected status %d.", resp.StatusCode)
 	}
 
 	var result struct {

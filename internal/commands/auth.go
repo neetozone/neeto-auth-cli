@@ -25,7 +25,7 @@ var loginCmd = &cobra.Command{
 		}
 
 		if subdomain == "" {
-			return fmt.Errorf("subdomain is required")
+			return fmt.Errorf("Subdomain is required.")
 		}
 
 		creds, err := auth.Login(subdomain)
@@ -66,14 +66,14 @@ var logoutCmd = &cobra.Command{
 
 		if subdomain == "" {
 			if len(store.Credentials) > 1 {
-				return fmt.Errorf("multiple subdomains authenticated (%s); specify --subdomain or --all",
+				return fmt.Errorf("Multiple subdomains authenticated (%s); specify --subdomain or --all.",
 					strings.Join(store.Subdomains(), ", "))
 			}
 			subdomain = store.Credentials[0].Subdomain
 		}
 
 		if !store.Remove(subdomain) {
-			return fmt.Errorf("not authenticated for %q", subdomain)
+			return fmt.Errorf("Not authenticated for %q.", subdomain)
 		}
 		if err := auth.SaveStore(store); err != nil {
 			return err
@@ -96,13 +96,13 @@ var whoamiCmd = &cobra.Command{
 		}
 
 		if len(store.Credentials) == 0 {
-			return fmt.Errorf("not authenticated. Run 'neetoauth login' to authenticate")
+			return fmt.Errorf("Not authenticated. Run 'neetoauth login' to authenticate.")
 		}
 
 		if subdomain != "" {
 			creds, ok := store.Find(subdomain)
 			if !ok {
-				return fmt.Errorf("not authenticated for %q. Authenticated subdomains: %s",
+				return fmt.Errorf("Not authenticated for %q. Authenticated subdomains: %s.",
 					subdomain, strings.Join(store.Subdomains(), ", "))
 			}
 			output.PrintMessage(fmt.Sprintf("Authenticated as %s on %s.", creds.Email, hostFromBaseURL(auth.BaseURL(creds.Subdomain), creds.Subdomain)))

@@ -25,7 +25,7 @@ var productsListCmd = &cobra.Command{
 		}
 		data, err := c.Get("/products", nil)
 		if err != nil {
-			return fmt.Errorf("failed to fetch products: %w", err)
+			return fmt.Errorf("Failed to fetch products: %w", err)
 		}
 		printList(data, "products", productBreadcrumbs())
 		return nil
@@ -65,9 +65,9 @@ func toggleProduct(enabled bool) func(cmd *cobra.Command, args []string) error {
 			"enabled": enabled,
 		}); err != nil {
 			if isProductNotFoundError(err) {
-				return fmt.Errorf("product %q not found. Run \"neetoauth products list\" to see available products", product)
+				return fmt.Errorf("Product %q not found. Run \"neetoauth products list\" to see available products.", product)
 			}
-			return fmt.Errorf("failed to %s product %q: %w", action, product, err)
+			return fmt.Errorf("Failed to %s product %q: %w", action, product, err)
 		}
 		output.PrintMessage(fmt.Sprintf("Product %q %s.", product, verbed))
 		return nil
