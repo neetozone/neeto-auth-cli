@@ -110,7 +110,7 @@ var usersCreateCmd = &cobra.Command{
 		}
 
 		breadcrumbs := []output.Breadcrumb{
-			{Label: "List all members", Command: "neetoauth users list"},
+			{Label: "List members", Command: "neetoauth users list"},
 			{Label: "Remove this member", Command: fmt.Sprintf("neetoauth users delete %v", user["email"])},
 		}
 
