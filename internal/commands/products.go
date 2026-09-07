@@ -5,8 +5,8 @@ import (
 	"fmt"
 	"net/http"
 
-	"github.com/neetozone/neeto-auth-cli/internal/client"
-	"github.com/neetozone/neeto-auth-cli/internal/output"
+	"github.com/neetozone/neeto-cli-commons/client"
+	"github.com/neetozone/neeto-cli-commons/output"
 	"github.com/spf13/cobra"
 )
 
@@ -69,7 +69,7 @@ func toggleProduct(enabled bool) func(cmd *cobra.Command, args []string) error {
 			}
 			return fmt.Errorf("Failed to %s product %q: %w", action, product, err)
 		}
-		output.PrintMessage(fmt.Sprintf("Product %q %s.", product, verbed))
+		printMessage(fmt.Sprintf("Product %q %s.", product, verbed))
 		return nil
 	}
 }
@@ -89,7 +89,7 @@ func productBreadcrumbs() []output.Breadcrumb {
 }
 
 func init() {
-	rootCmd.AddCommand(productsCmd)
+	register(func(root *cobra.Command) { root.AddCommand(productsCmd) })
 	productsCmd.AddCommand(productsListCmd)
 	productsCmd.AddCommand(enableProductCmd)
 	productsCmd.AddCommand(disableProductCmd)

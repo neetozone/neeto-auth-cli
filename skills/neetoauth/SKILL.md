@@ -31,15 +31,15 @@ subdomain to use by these rules:
 | `neetoauth login --subdomain <name>` | Adds or refreshes the entry for `<name>`. No flag → prompts for the subdomain. |
 | `neetoauth logout --subdomain <name>` | Removes that one entry. |
 | `neetoauth logout --all` | Removes every entry. |
-| `neetoauth logout` (no flag) | Removes the only entry if exactly one is logged in; errors if multiple. |
-| `neetoauth whoami` | Lists every logged-in account. Marks the entry `(default)` when exactly one. |
+| `neetoauth logout` (no flag) | Removes the only entry if exactly one is authenticated; errors if multiple. |
+| `neetoauth whoami` | Lists every authenticated account. Marks the entry `(default)` when exactly one. |
 | `neetoauth whoami --subdomain <name>` | Shows just that one. |
 
 ## Global flags (persistent on every command)
 
 | Flag | Purpose |
 |---|---|
-| `--subdomain <name>` | Select which logged-in subdomain the command targets. Required when multiple are logged in. |
+| `--subdomain <name>` | Select which authenticated subdomain the command targets. Required when multiple are authenticated. |
 | `--json` | Force JSON envelope output even on a TTY. |
 | `--quiet` | Emit only the raw payload — no envelope, no breadcrumbs. For action commands (create/update), emits just the resource identifier; `delete` emits `success`. Designed for scripting. |
 | `--toon` | Emit TOON (Token Optimized Output Notation). Preferred for feeding list/show output back to an LLM; ~30–60% fewer tokens than JSON. |
@@ -98,8 +98,9 @@ Use this whenever a user asks about a flag or command not covered below.
 
 | Command | Purpose |
 |---|---|
-| `doctor` | Auth check + API reachability + version. Uses `--subdomain` when multiple are logged in. |
+| `doctor` | Auth check + API reachability + version. Uses `--subdomain` when multiple are authenticated. |
 | `version` | Print CLI version / commit / build date. |
+| `update` | Update the CLI to the latest version (auto-detects brew / shell / PowerShell install). |
 | `commands` | Emit the full command/flag catalog as JSON. |
 | `setup claude` | Install NeetoAuth plugin into Claude Code (`plugin.json`, hooks, this SKILL.md). |
 | `setup cursor` / `windsurf` / `copilot` / `gemini` / `codex` | Write NeetoAuth rule files into the current project directory; re-run after an upgrade to refresh them. |

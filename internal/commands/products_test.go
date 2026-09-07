@@ -5,17 +5,13 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/neetozone/neeto-auth-cli/internal/client"
+	"github.com/neetozone/neeto-cli-commons/client"
 )
 
 func TestProductsCommandsRegistered(t *testing.T) {
 	found := map[string]bool{}
-	for _, c := range rootCmd.Commands() {
-		if c.Name() == "products" {
-			for _, sub := range c.Commands() {
-				found[sub.Name()] = true
-			}
-		}
+	for _, sub := range productsCmd.Commands() {
+		found[sub.Name()] = true
 	}
 	for _, want := range []string{"list", "enable", "disable"} {
 		if !found[want] {
@@ -89,3 +85,7 @@ func TestIsProductNotFoundError(t *testing.T) {
 		t.Error("isProductNotFoundError(non-APIError) = true, want false")
 	}
 }
+
+type errString string
+
+func (e errString) Error() string { return string(e) }

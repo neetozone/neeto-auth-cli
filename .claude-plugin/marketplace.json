@@ -8,7 +8,7 @@
     {
       "name": "neetoauth",
       "source": "./",
-      "description": "Command-line interface for NeetoAuth team member management."
+      "description": "manage team members and product access from the terminal"
     }
   ]
 }

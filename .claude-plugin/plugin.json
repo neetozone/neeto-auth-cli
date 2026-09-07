@@ -1,10 +1,11 @@
 {
   "name": "neetoauth",
-  "description": "Command-line interface for NeetoAuth team member management.",
+  "description": "manage team members and product access from the terminal",
   "author": {
     "name": "BigBinary",
     "email": "support@bigbinary.com"
   },
   "homepage": "https://github.com/neetozone/neeto-auth-cli",
-  "repository": "https://github.com/neetozone/neeto-auth-cli"
+  "repository": "https://github.com/neetozone/neeto-auth-cli",
+  "license": "MIT"
 }

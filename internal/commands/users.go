@@ -4,7 +4,7 @@ import (
 	"fmt"
 	"strings"
 
-	"github.com/neetozone/neeto-auth-cli/internal/output"
+	"github.com/neetozone/neeto-cli-commons/output"
 	"github.com/spf13/cobra"
 )
 
@@ -114,7 +114,7 @@ var usersCreateCmd = &cobra.Command{
 			{Label: "Remove this member", Command: fmt.Sprintf("neetoauth users delete %v", user["email"])},
 		}
 
-		printResource(data, breadcrumbs)
+		printActionResult(data, breadcrumbs)
 		return nil
 	},
 }
@@ -133,24 +133,26 @@ var usersDeleteCmd = &cobra.Command{
 			return err
 		}
 
-		output.PrintMessage(fmt.Sprintf("Removed %s from the workspace.", args[0]))
+		printMessage(fmt.Sprintf("Removed %s from the workspace.", args[0]))
 		return nil
 	},
 }
 
 func init() {
-	rootCmd.AddCommand(usersCmd)
+	register(func(root *cobra.Command) { root.AddCommand(usersCmd) })
 
 	usersCmd.AddCommand(usersListCmd)
 	addPaginationFlags(usersListCmd)
 
 	usersCmd.AddCommand(usersCreateCmd)
-	usersCreateCmd.Flags().String("email", "", "Member email address (required)")
-	usersCreateCmd.Flags().String("role", "", "Organization role, e.g. owner or non_owner (required)")
+	usersCreateCmd.Flags().String("email", "", "Member email address")
+	usersCreateCmd.Flags().String("role", "", "Organization role, e.g. owner or non_owner")
 	usersCreateCmd.Flags().String("first-name", "", "Member first name")
 	usersCreateCmd.Flags().String("last-name", "", "Member last name")
 	usersCreateCmd.Flags().StringSlice("app", nil, "Per-app role assignment as name:role (repeatable)")
 	usersCreateCmd.Flags().String("json-file", "", "Path to a JSON file with the full user payload")
+	markFlagsRequired(usersCreateCmd, "email", "role")
+	allowJSONFileToSatisfyRequiredFlags(usersCreateCmd)
 
 	usersCmd.AddCommand(usersDeleteCmd)
 }
