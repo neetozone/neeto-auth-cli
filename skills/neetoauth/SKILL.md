@@ -137,7 +137,7 @@ The CLI wraps NeetoAuth's external team-member API
 | Command | Required flags / args | Optional flags | Returns |
 |---|---|---|---|
 | `users list` | — | `--page`, `--page-size` | `{ "data": [{ email, role, first_name, last_name }, …] }` (one entry per **active** workspace member). |
-| `users create` | `--email *`, `--role *` | `--first-name`, `--last-name`, `--app <product>:<role>` (repeatable), `--json-file <path>` | `201 Created` with the newly-invited user as `{ "data": { email, role, first_name, last_name, apps: [...] } }`. |
+| `users create` | `--email *`, `--role *` | `--first-name`, `--last-name`, `--app <product>:<role>` (repeatable), `--json-file <path>` | `201 Created` with the newly-invited user as `{ "data": { email, role, first_name, last_name, apps: [...] } }`. Quiet mode emits the email address. |
 | `users delete <email>` | `<email>` (positional) | — | `204 No Content`; the CLI prints `Removed <email> from the workspace.` Quiet mode emits `success`. |
 
 Notes for `users create`:
