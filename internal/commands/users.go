@@ -56,7 +56,11 @@ var usersCreateCmd = &cobra.Command{
 			if err != nil {
 				return err
 			}
-			if nested, ok := fileData["user"].(map[string]interface{}); ok {
+			if raw, ok := fileData["user"]; ok {
+				nested, ok := raw.(map[string]interface{})
+				if !ok {
+					return fmt.Errorf("Invalid \"user\" field in %s: expected an object.", jsonFile)
+				}
 				user = nested
 			} else {
 				user = fileData
