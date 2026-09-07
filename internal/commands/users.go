@@ -119,6 +119,32 @@ var usersCreateCmd = &cobra.Command{
 	},
 }
 
+func satisfyRequiredFlagsFromNestedUserJSONFile(cmd *cobra.Command, args []string) error {
+	jsonFile, _ := cmd.Flags().GetString("json-file")
+	if jsonFile == "" {
+		return nil
+	}
+	fileData, err := readJSONFile(jsonFile)
+	if err != nil {
+		return err
+	}
+	nested, ok := fileData["user"].(map[string]interface{})
+	if !ok {
+		return nil
+	}
+	for _, name := range []string{"email", "role"} {
+		if cmd.Flags().Changed(name) {
+			continue
+		}
+		if value, ok := nested[name].(string); ok && value != "" {
+			if err := cmd.Flags().Set(name, value); err != nil {
+				return err
+			}
+		}
+	}
+	return nil
+}
+
 var usersDeleteCmd = &cobra.Command{
 	Use:   "delete <email>",
 	Short: "Remove a team member from the workspace",
@@ -151,6 +177,7 @@ func init() {
 	usersCreateCmd.Flags().String("last-name", "", "Member last name")
 	usersCreateCmd.Flags().StringSlice("app", nil, "Per-app role assignment as name:role (repeatable)")
 	usersCreateCmd.Flags().String("json-file", "", "Path to a JSON file with the full user payload")
+	usersCreateCmd.PreRunE = satisfyRequiredFlagsFromNestedUserJSONFile
 	markFlagsRequired(usersCreateCmd, "email", "role")
 	allowJSONFileToSatisfyRequiredFlags(usersCreateCmd)
 
