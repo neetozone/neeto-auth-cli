@@ -100,3 +100,49 @@ func TestIsProductNotFoundError(t *testing.T) {
 type errString string
 
 func (e errString) Error() string { return string(e) }
+
+func TestProductsEnableSendsPatchWithEnabledTrue(t *testing.T) {
+	recorded, err := runCommand(t, http.StatusOK, `{}`, "products", "enable", "cal")
+	if err != nil {
+		t.Fatalf("products enable: %v", err)
+	}
+	if recorded.Method != http.MethodPatch {
+		t.Errorf("method = %q, want %q", recorded.Method, http.MethodPatch)
+	}
+	if want := "/api/external/v2/products/cal"; recorded.Path != want {
+		t.Errorf("path = %q, want %q", recorded.Path, want)
+	}
+	if recorded.Body["enabled"] != true {
+		t.Errorf("body = %v, want enabled true", recorded.Body)
+	}
+}
+
+func TestProductsDisableSendsPatchWithEnabledFalse(t *testing.T) {
+	recorded, err := runCommand(t, http.StatusOK, `{}`, "products", "disable", "cal")
+	if err != nil {
+		t.Fatalf("products disable: %v", err)
+	}
+	if recorded.Body["enabled"] != false {
+		t.Errorf("body = %v, want enabled false", recorded.Body)
+	}
+}
+
+func TestProductsEnableEscapesTheProductNameInThePath(t *testing.T) {
+	recorded, _ := runCommand(t, http.StatusNotFound, `{"error":"not found"}`, "products", "enable", "cal?x")
+
+	if want := "/api/external/v2/products/cal%3Fx"; recorded.Path != want {
+		t.Errorf("path = %q, want %q — an unescaped name silently retargets the request", recorded.Path, want)
+	}
+}
+
+func TestProductsListReadsTheEnabledFlag(t *testing.T) {
+	recorded, err := runCommand(t, http.StatusOK,
+		`{"products":[{"name":"Cal","enabled":true,"roles":["Admin"]},{"name":"Git","enabled":false,"roles":[]}],"pagination":{"total_records":2,"total_pages":1,"current_page_number":1,"page_size":30}}`,
+		"products", "list")
+	if err != nil {
+		t.Fatalf("products list: %v", err)
+	}
+	if want := "/api/external/v2/products"; recorded.Path != want {
+		t.Errorf("path = %q, want %q", recorded.Path, want)
+	}
+}

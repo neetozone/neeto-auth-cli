@@ -4,6 +4,7 @@ import (
 	"errors"
 	"fmt"
 	"net/http"
+	"net/url"
 
 	"github.com/neetozone/neeto-cli-commons/client"
 	"github.com/neetozone/neeto-cli-commons/output"
@@ -61,7 +62,7 @@ func toggleProduct(enabled bool) func(cmd *cobra.Command, args []string) error {
 		if err != nil {
 			return err
 		}
-		if _, err := c.Patch(fmt.Sprintf("/products/%s", product), map[string]any{
+		if _, err := c.Patch(fmt.Sprintf("/products/%s", url.PathEscape(product)), map[string]any{
 			"enabled": enabled,
 		}); err != nil {
 			if isProductNotFoundError(err) {

@@ -2,6 +2,7 @@ package commands
 
 import (
 	"fmt"
+	"net/url"
 	"strings"
 
 	"github.com/neetozone/neeto-cli-commons/output"
@@ -133,7 +134,7 @@ var usersDeleteCmd = &cobra.Command{
 			return err
 		}
 
-		if err := c.Delete(fmt.Sprintf("/users/%s", args[0])); err != nil {
+		if err := c.Delete(fmt.Sprintf("/users/%s", url.PathEscape(args[0]))); err != nil {
 			return err
 		}
 
