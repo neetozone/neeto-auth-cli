@@ -159,7 +159,7 @@ Notes for `users delete`:
 
 | Command | Args | Returns |
 |---|---|---|
-| `products list` | — | `{ "data": [{ "name": "<app_name>", "enabled": true, "roles": ["<role1>", "<role2>", …] }, …] }`. Lists every product the workspace has, enabled or not. Use the `name`/`roles` pairs of an enabled product to construct valid `--app` values for `users create`. |
+| `products list` | — | `{ "data": [{ "name": "<app_name>", "enabled": true, "roles": ["<role1>", "<role2>", …] }, …] }`. Lists the products the workspace can see, enabled or not; products hidden from the workspace, such as ones still in private production, are left out. Use the `name`/`roles` pairs of an enabled product to construct valid `--app` values for `users create`. |
 | `products enable` | `--product <name> *` | A confirmation message. Turns the product on for the workspace. |
 | `products disable` | `--product <name> *` | A confirmation message. Turns the product off for the workspace. |
 
