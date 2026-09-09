@@ -12,12 +12,12 @@ import (
 
 var productsCmd = &cobra.Command{
 	Use:   "products",
-	Short: "Inspect products and their available roles",
+	Short: "Inspect products, whether they are enabled, and their available roles",
 }
 
 var productsListCmd = &cobra.Command{
 	Use:   "list",
-	Short: "List products available in the workspace and the roles each one exposes",
+	Short: "List every product in the workspace with its enabled state and the roles it exposes",
 	RunE: func(cmd *cobra.Command, args []string) error {
 		c, err := getClient(cmd)
 		if err != nil {
@@ -84,6 +84,8 @@ func isProductNotFoundError(err error) bool {
 
 func productBreadcrumbs() []output.Breadcrumb {
 	return []output.Breadcrumb{
+		{Label: "Enable a product", Command: "neetoauth products enable <product>"},
+		{Label: "Disable a product", Command: "neetoauth products disable <product>"},
 		{Label: "Use a role when inviting", Command: "neetoauth users create --email <email> --role non_owner --app <product>:<role>"},
 	}
 }

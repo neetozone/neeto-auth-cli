@@ -6,6 +6,7 @@ import (
 	"testing"
 
 	"github.com/neetozone/neeto-cli-commons/client"
+	"github.com/neetozone/neeto-cli-commons/output"
 )
 
 func TestProductsCommandsRegistered(t *testing.T) {
@@ -61,16 +62,26 @@ func TestToggleProductAction(t *testing.T) {
 }
 
 func TestProductBreadcrumbs(t *testing.T) {
+	want := []output.Breadcrumb{
+		{Label: "Enable a product", Command: "neetoauth products enable <product>"},
+		{Label: "Disable a product", Command: "neetoauth products disable <product>"},
+		{Label: "Use a role when inviting", Command: "neetoauth users create --email <email> --role non_owner --app <product>:<role>"},
+	}
+
 	crumbs := productBreadcrumbs()
-	if len(crumbs) != 1 {
-		t.Fatalf("len(productBreadcrumbs()) = %d, want 1", len(crumbs))
+	if len(crumbs) != len(want) {
+		t.Fatalf("len(productBreadcrumbs()) = %d, want %d", len(crumbs), len(want))
 	}
-	if crumbs[0].Label != "Use a role when inviting" {
-		t.Errorf("breadcrumb label = %q, want %q", crumbs[0].Label, "Use a role when inviting")
+	for i, crumb := range want {
+		if crumbs[i] != crumb {
+			t.Errorf("breadcrumb %d = %+v, want %+v", i, crumbs[i], crumb)
+		}
 	}
-	wantCommand := "neetoauth users create --email <email> --role non_owner --app <product>:<role>"
-	if crumbs[0].Command != wantCommand {
-		t.Errorf("breadcrumb command = %q, want %q", crumbs[0].Command, wantCommand)
+}
+
+func TestProductsListMentionsEnabledState(t *testing.T) {
+	if !strings.Contains(productsListCmd.Short, "enabled state") {
+		t.Errorf("products list Short = %q, want it to mention the enabled state", productsListCmd.Short)
 	}
 }
 
