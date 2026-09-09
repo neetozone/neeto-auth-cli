@@ -34,18 +34,18 @@ var productsListCmd = &cobra.Command{
 }
 
 var enableProductCmd = &cobra.Command{
-	Use:     "enable <product>",
+	Use:     "enable",
 	Short:   "Enable a product",
-	Example: `  neetoauth products enable crm`,
-	Args:    cobra.ExactArgs(1),
+	Example: `  neetoauth products enable --product crm`,
+	Args:    cobra.MaximumNArgs(1),
 	RunE:    toggleProduct(true),
 }
 
 var disableProductCmd = &cobra.Command{
-	Use:     "disable <product>",
+	Use:     "disable",
 	Short:   "Disable a product",
-	Example: `  neetoauth products disable crm`,
-	Args:    cobra.ExactArgs(1),
+	Example: `  neetoauth products disable --product crm`,
+	Args:    cobra.MaximumNArgs(1),
 	RunE:    toggleProduct(false),
 }
 
@@ -57,7 +57,10 @@ func toggleProduct(enabled bool) func(cmd *cobra.Command, args []string) error {
 		verbed = "enabled"
 	}
 	return func(cmd *cobra.Command, args []string) error {
-		product := args[0]
+		product, err := selectedProduct(cmd, args)
+		if err != nil {
+			return err
+		}
 		c, err := getClient(cmd)
 		if err != nil {
 			return err
@@ -75,6 +78,20 @@ func toggleProduct(enabled bool) func(cmd *cobra.Command, args []string) error {
 	}
 }
 
+func selectedProduct(cmd *cobra.Command, args []string) (string, error) {
+	flagValue, _ := cmd.Flags().GetString("product")
+	switch {
+	case flagValue != "" && len(args) > 0:
+		return "", fmt.Errorf("Pass the product once, either as --product or as a positional argument.")
+	case flagValue != "":
+		return flagValue, nil
+	case len(args) > 0:
+		return args[0], nil
+	default:
+		return "", fmt.Errorf("--product is required (e.g. --product cal).")
+	}
+}
+
 func isProductNotFoundError(err error) bool {
 	var apiErr *client.APIError
 	if errors.As(err, &apiErr) {
@@ -85,8 +102,8 @@ func isProductNotFoundError(err error) bool {
 
 func productBreadcrumbs() []output.Breadcrumb {
 	return []output.Breadcrumb{
-		{Label: "Enable a product", Command: "neetoauth products enable <product>"},
-		{Label: "Disable a product", Command: "neetoauth products disable <product>"},
+		{Label: "Enable a product", Command: "neetoauth products enable --product <product>"},
+		{Label: "Disable a product", Command: "neetoauth products disable --product <product>"},
 		{Label: "Use a role when inviting", Command: "neetoauth users create --email <email> --role non_owner --app <product>:<role>"},
 	}
 }
@@ -95,5 +112,8 @@ func init() {
 	register(func(root *cobra.Command) { root.AddCommand(productsCmd) })
 	productsCmd.AddCommand(productsListCmd)
 	productsCmd.AddCommand(enableProductCmd)
+	enableProductCmd.Flags().String("product", "", "Name of the product to enable")
+
 	productsCmd.AddCommand(disableProductCmd)
+	disableProductCmd.Flags().String("product", "", "Name of the product to disable")
 }
