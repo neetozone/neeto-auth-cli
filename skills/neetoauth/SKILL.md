@@ -159,13 +159,26 @@ Notes for `users delete`:
 
 | Command | Args | Returns |
 |---|---|---|
-| `products list` | — | `{ "data": [{ "name": "<app_name>", "roles": ["<role1>", "<role2>", …] }, …] }`. Use the `name`/`roles` pairs to construct valid `--app` values for `users create`. |
+| `products list` | — | `{ "data": [{ "name": "<app_name>", "enabled": true, "roles": ["<role1>", "<role2>", …] }, …] }`. Lists the products the workspace can see, enabled or not; products hidden from the workspace, such as ones still in private production, are left out. Use the `name`/`roles` pairs of an enabled product to construct valid `--app` values for `users create`. |
+| `products enable` | `--product <name> *` | A confirmation message. Turns the product on for the workspace. |
+| `products disable` | `--product <name> *` | A confirmation message. Turns the product off for the workspace. |
+
+Notes for `neetoauth products`:
+- `roles` is an empty list for a product that has not published any roles
+  to this workspace yet.
+- `--product` is the documented way to name the product. A bare positional
+  argument (`neetoauth products enable cal`) still works for compatibility
+  with 1.2.0, but passing both forms at once is an error.
+- The product name is matched case-insensitively, so `cal` and `Cal` both
+  work for `enable` and `disable`.
+- A name that the workspace does not have at all returns an error naming
+  the product.
 
 ### Typical agent flow
 
 1. `neetoauth doctor` — confirm auth is healthy.
-2. `neetoauth products list --toon` — discover what apps and roles exist
-   in this workspace.
+2. `neetoauth products list --toon` — discover what apps exist in this
+   workspace, which are enabled, and what roles each one exposes.
 3. `neetoauth users list --toon` — see who is already a member.
 4. `neetoauth users create --email new@x.com --role non_owner --app neetocal:admin --quiet`
    — invite, then read the printed identifier.
