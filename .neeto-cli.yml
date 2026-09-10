@@ -2,6 +2,7 @@ pretty_name: NeetoAuth
 binary_name: neetoauth
 short_description: manage team members and product access from the terminal
 long_description: A command-line interface for NeetoAuth. Manage team members and inspect product roles in your workspace.
+docs_url: https://apidocs.neetoauth.com/cli/introduction
 api_base_path: /api/external/v2
 root_examples:
   - neetoauth users list
