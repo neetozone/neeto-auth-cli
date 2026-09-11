@@ -9,4 +9,4 @@ root_examples:
   - neetoauth products list
   - neetoauth whoami
 priority_fields: [name, email, first_name, last_name, role, organization_role, status, kind, type, enabled]
-commons_version: v1.1.0
+commons_version: v1.1.1
