@@ -5,8 +5,8 @@ import (
 	"strings"
 	"testing"
 
-	"github.com/neetozone/neeto-cli-commons/client"
-	"github.com/neetozone/neeto-cli-commons/output"
+	"github.com/neetozone/neeto-cli-commons/v2/client"
+	"github.com/neetozone/neeto-cli-commons/v2/output"
 	"github.com/spf13/cobra"
 )
 

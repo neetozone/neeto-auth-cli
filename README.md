@@ -53,7 +53,7 @@ neetoauth --help
 <!-- neeto-cli-commons:prerequisites:start -->
 ## Prerequisites (development)
 
-- [Go](https://go.dev/dl/) 1.26.1+
+- [Go](https://go.dev/dl/) 1.27.3+
 - Access to a NeetoAuth organization
 <!-- neeto-cli-commons:prerequisites:end -->
 
