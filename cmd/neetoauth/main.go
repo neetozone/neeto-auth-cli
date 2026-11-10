@@ -6,8 +6,8 @@ import (
 
 	product "github.com/neetozone/neeto-auth-cli"
 	"github.com/neetozone/neeto-auth-cli/internal/commands"
-	"github.com/neetozone/neeto-cli-commons/cli"
-	"github.com/neetozone/neeto-cli-commons/config"
+	"github.com/neetozone/neeto-cli-commons/v2/cli"
+	"github.com/neetozone/neeto-cli-commons/v2/config"
 )
 
 var (
